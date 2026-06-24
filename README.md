@@ -1,226 +1,230 @@
-EyeVault — Hospital Management System
+\# 🏥 EyeVault — Hospital Management System
 
-🧭 Overview
 
 
+!\[Python](https://img.shields.io/badge/Python-3.x-blue)
 
-EyeVault is a Flask-based hospital management system designed to digitize and streamline core hospital workflows such as patient registration, doctor management, appointment scheduling, and token generation.
+!\[Flask](https://img.shields.io/badge/Flask-Web%20Framework-black)
 
+!\[SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy-orange)
 
 
-The system focuses on data consistency, workflow automation, and scalable backend design using Python and SQLAlchemy ORM.
 
+\---
 
 
-🎯 Problem Statement
 
+\## 🧭 Overview
 
 
-Traditional hospital systems rely heavily on manual processes for:
 
+EyeVault is a Flask-based hospital management system that digitizes hospital workflows such as:
 
 
-Patient registration
 
-Appointment booking
+\- Patient registration  
 
-Queue / token management
+\- Doctor management  
 
+\- Appointment booking  
 
+\- Token generation  
 
-This leads to:
 
 
+It is designed using \*\*Flask + SQLAlchemy ORM\*\* with a focus on clean backend architecture.
 
-Inefficient workflows
 
-Duplicate patient records
 
-Poor queue tracking
+\---
 
-✔ Solution
 
 
+\## 🎯 Problem Statement
 
-EyeVault introduces a structured backend system that automates hospital operations and ensures data consistency.
 
 
+Traditional hospital systems suffer from:
 
-⚙️ System Architecture
 
-Frontend (HTML / Jinja2)
 
-&#x20;       ↓
+\- Manual record management  
 
-Flask Web Server (Routes / Controllers)
+\- Duplicate patient entries  
 
-&#x20;       ↓
+\- Poor queue handling  
 
-Business Logic Layer (Python)
 
-&#x20;       ↓
 
-SQLAlchemy ORM
+\---
 
-&#x20;       ↓
 
-Database (SQLite / MySQL)
 
-🚀 Key Features
+\## ✔ Solution
 
-👤 Patient Management
 
-Create patient records
 
-Prevent duplicate entries using phone number validation
+EyeVault provides a structured system to:
 
-👨‍⚕️ Doctor Management
 
-Maintain doctor profiles
 
-Dynamic retrieval of doctor data
+\- Automate patient workflow  
 
-📅 Appointment System
+\- Maintain unique patient records  
 
-Book appointments with doctor and time slot
+\- Manage appointment scheduling  
 
-Maintain structured appointment records
+\- Generate queue tokens efficiently  
 
-🎟️ Token System
 
-Auto-increment token generation
 
-Maintain patient queue order
+\---
 
-Track visit source
 
-🧠 Core Design Principles
 
-ORM-based architecture using SQLAlchemy
+\## ⚙️ System Architecture
 
-Normalized relational database schema
 
-Separation of concerns (routes, models, logic)
 
-Stateless request handling using Flask
+Frontend → Flask Server → Business Logic → SQLAlchemy ORM → Database
 
-Scalable backend structure
 
-🗄️ Database Schema
 
-Patient
+\---
 
-id (Primary Key)
 
-name
 
-dob
+\## 🚀 Features
 
-gender
 
-phone (unique)
 
-Doctor
+\### 👤 Patient Management
 
-id (Primary Key)
+\- Register patients  
 
-name
+\- Prevent duplicate entries using phone number  
 
-specialization
 
-Appointment
 
-id (Primary Key)
+\### 👨‍⚕️ Doctor Management
 
-patient\_id (Foreign Key)
+\- Add and manage doctors  
 
-doctor\_id (Foreign Key)
+\- Fetch doctor data dynamically  
 
-appointment\_date
 
-appointment\_time
 
-status
+\### 📅 Appointment System
 
-Token
+\- Book appointments  
 
-id (Primary Key)
+\- Store structured scheduling data  
 
-patient\_id (Foreign Key)
 
-token\_number
 
-visit\_date
+\### 🎟️ Token System
 
-status
+\- Auto-generated tokens  
 
-source
+\- Maintains queue order  
 
-🛠️ Tech Stack
 
-Python 3.x
 
-Flask
+\---
 
-SQLAlchemy ORM
 
-HTML / Jinja2 Templates
 
-SQLite / MySQL
+\## 🧠 Design Principles
 
-📦 Installation
 
-1\. Clone repository
+
+\- ORM-based architecture  
+
+\- Modular Flask design  
+
+\- Separation of concerns  
+
+\- Scalable backend structure  
+
+
+
+\---
+
+
+
+\## 🗄️ Database Schema
+
+
+
+\*\*Patient\*\*
+
+\- id, name, dob, gender, phone
+
+
+
+\*\*Doctor\*\*
+
+\- id, name, specialization
+
+
+
+\*\*Appointment\*\*
+
+\- id, patient\_id, doctor\_id, date, time, status
+
+
+
+\*\*Token\*\*
+
+\- id, patient\_id, token\_number, visit\_date, status
+
+
+
+\---
+
+
+
+\## 🛠️ Tech Stack
+
+
+
+\- Python  
+
+\- Flask  
+
+\- SQLAlchemy  
+
+\- HTML / Jinja2  
+
+\- SQLite  
+
+
+
+\---
+
+
+
+\## 📦 Setup Instructions
+
+
+
+```bash
 
 git clone https://github.com/Rizwana200/EyeVault.git
 
 cd EyeVault
 
-2\. Create virtual environment
+
 
 python -m venv venv
 
 venv\\Scripts\\activate
 
-3\. Install dependencies
+
 
 pip install -r requirements.txt
 
-4\. Run application
+
 
 python app.py
-
-
-
-Open in browser:
-
-
-
-http://127.0.0.1:5000/
-
-📊 What This Project Demonstrates
-
-Backend development using Flask
-
-REST-style route design
-
-Database modeling using ORM
-
-CRUD operations across entities
-
-Queue/token system logic
-
-Real-world workflow automation
-
-🔮 Future Enhancements
-
-Role-based authentication (Admin / Doctor / Receptionist)
-
-REST API layer for mobile integration
-
-Appointment conflict resolution system
-
-Dashboard analytics (patient flow, doctor workload)
-
-Frontend upgrade using React / Bootstrap
 
