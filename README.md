@@ -156,6 +156,7 @@ cd EyeVault
 ```bash
 python -m venv venv
 
+```
 ## 3. Activate virtual environment
 
 ### 🪟 Windows
@@ -163,20 +164,24 @@ python -m venv venv
 ```bash
 venv\Scripts\activate
 
+```
 ### 🍎 Mac / Linux
 
 ```bash
 source venv/bin/activate
 
+```
 ## 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 
+```
 ## 5. Run the project
 
 ```bash
 python app.py
+
 ```
 
 ## 🌐 Open in browser
