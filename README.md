@@ -177,6 +177,7 @@ pip install -r requirements.txt
 
 ```bash
 python app.py
+```
 
 ## 🌐 Open in browser
 
