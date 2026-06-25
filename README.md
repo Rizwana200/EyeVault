@@ -115,27 +115,17 @@ It helps clinic staff handle daily operations like patient registration, visit h
 ## Screenshots
 
 ### Home Page
-![Home Page](screenshots_eyevault/home.png)
+![Home Page](screenshots_eyevault/home-page.png)
 
 ---
 
 ### Patient Registration
-![Patient Registration](screenshots_eyevault/patient-register.png)
-
----
-
-### Patient Login
-![Patient Login](screenshots_eyevault/patient-login.png)
+![Patient Registration](screenshots_eyevault/patient-registration.png)
 
 ---
 
 ### Patient Dashboard
-![Patient Dashboard](screenshots_eyevault/patient-dashboard.png)
-
----
-
-### Staff Login
-![Staff Login](screenshots_eyevault/staff-login.png)
+![Patient Dashboard](screenshots_eyevault/patient-directory.png)
 
 ---
 
@@ -145,57 +135,12 @@ It helps clinic staff handle daily operations like patient registration, visit h
 ---
 
 ### Patient Information Page
-![Patient Information](screenshots_eyevault/patient-information.png)
-
----
-
-### Add Visit
-![Add Visit](screenshots_eyevault/add-visit.png)
-
----
-
-### Visit History
-![Visit History](screenshots_eyevault/visit-history.png)
-
----
-
-### Upload Report
-![Upload Report](screenshots_eyevault/upload-report.png)
-
----
-
-### Reports Page
-![Reports](screenshots_eyevault/reports.png)
-
----
-
-### Add Billing
-![Add Billing](screenshots_eyevault/add-billing.png)
-
----
-
-### Billing History
-![Billing History](screenshots_eyevault/billing-history.png)
-
----
-
-### Edit Billing
-![Edit Billing](screenshots_eyevault/edit-billing.png)
+![Patient Information](screenshots_eyevault/patient-details.png)
 
 ---
 
 ### Token Dashboard
 ![Token Dashboard](screenshots_eyevault/token-dashboard.png)
-
----
-
-### Doctors Page
-![Doctors](screenshots_eyevault/doctors.png)
-
----
-
-### Spectacles Page
-![Spectacles](screenshots_eyevault/spects.png)
 
 ---
 
