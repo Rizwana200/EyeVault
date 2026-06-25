@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Billing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-danger">
+    <div class="container">
+        <span class="navbar-brand fw-bold">💳 Add Billing</span>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+            <h3 class="mb-4 text-danger">Billing Form</h3>
+
+            <form method="POST">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Bill Date</label>
+                    <input type="date" name="bill_date" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Consultation Fee</label>
+                    <input type="number" step="0.01" name="consultation_fee" class="form-control" value="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Medicine Fee</label>
+                    <input type="number" step="0.01" name="medicine_fee" class="form-control" value="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Spects Name</label>
+                    <input type="text" name="spect_name" class="form-control" placeholder="Enter spects name">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Spects Cost</label>
+                    <input type="number" step="0.01" name="spect_cost" class="form-control" value="0">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Paid Amount</label>
+                    <input type="number" step="0.01" name="paid_amount" class="form-control" value="0" required>
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 py-2">
+                    Save Bill
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <a href="/staff-dashboard" class="btn btn-secondary">
+                    ⬅ Back
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,16 +19,6 @@
 </nav>
 
 <div class="container mt-5">
-
-    {% if msg %}
-    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-        {{ msg }}
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
-    </div>
-    {% endif %}
 
     <div class="row">
 
@@ -85,11 +76,6 @@
                             🎫 Create Call / Walk-in Token
                         </a>
 
-                        <a href="/token-settings"
-                           class="btn btn-secondary">
-                            ⚙ Token Settings
-                        </a>
-
                         <a href="/token-dashboard"
                            class="btn btn-success">
                             📋 View Today's Tokens
@@ -110,6 +96,11 @@
                             👨‍⚕️ Doctors List
                         </a>
 
+                        <a href="/add-doctor"
+                           class="btn btn-dark">
+                            ➕ Add Doctor
+                        </a>
+
                     </div>
 
                 </div>
@@ -122,7 +113,6 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
+```

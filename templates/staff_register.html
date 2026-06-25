@@ -9,6 +9,14 @@
 
 <body class="bg-light">
 
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+        <span class="navbar-brand">
+            👨‍⚕️ EyeVault Staff Registration
+        </span>
+    </div>
+</nav>
+
 <div class="container mt-5">
 
     <div class="card shadow mx-auto"
@@ -20,35 +28,48 @@
                 Staff Registration
             </h2>
 
+            {% if msg %}
+            <div class="alert alert-{{ msg_type }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ msg }}
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+            </div>
+            {% endif %}
+
             <form method="POST">
 
+                <label class="form-label">Name</label>
                 <input type="text"
                        name="name"
                        class="form-control"
-                       placeholder="Name"
+                       placeholder="Enter Name"
                        required>
 
                 <br>
 
+                <label class="form-label">Phone Number</label>
                 <input type="text"
                        name="phone"
                        class="form-control"
-                       placeholder="Phone Number"
+                       placeholder="Enter Phone Number"
                        required>
 
                 <br>
 
+                <label class="form-label">Password</label>
                 <input type="password"
                        name="password"
                        class="form-control"
-                       placeholder="Password"
+                       placeholder="Enter Password"
                        required>
 
                 <br>
 
                 <button type="submit"
                         class="btn btn-warning w-100">
-                    Register
+                    Register Staff
                 </button>
 
             </form>
@@ -57,7 +78,26 @@
 
     </div>
 
+    <div class="text-center mt-3">
+        <a href="/"
+           class="btn btn-secondary">
+            ⬅ Back to Home
+        </a>
+    </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+setTimeout(function () {
+    let alertBox = document.querySelector('.alert');
+    if (alertBox) {
+        let bsAlert = bootstrap.Alert.getOrCreateInstance(alertBox);
+        bsAlert.close();
+    }
+}, 2000);
+</script>
 
 </body>
 </html>

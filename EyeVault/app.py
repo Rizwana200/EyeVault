@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 import os
-from datetime import date, datetime
+from datetime import date
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from openpyxl import Workbook
@@ -9,7 +9,7 @@ from flask import send_file
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.secret_key = "eyevault_secret_key_123"
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -92,18 +92,7 @@ class Doctor(db.Model):
 
     available_time = db.Column(db.String(100))
     
-
-    
-class Settings(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    max_tokens_per_day = db.Column(db.Integer, default=5)
-
-
-class Spect(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    price = db.Column(db.Float)
-class Billing(db.Model):
+class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     patient_id = db.Column(
@@ -111,19 +100,17 @@ class Billing(db.Model):
         db.ForeignKey('patient.id')
     )
 
-    bill_date = db.Column(db.String(20))
+    doctor_id = db.Column(
+        db.Integer,
+        db.ForeignKey('doctor.id')
+    )
 
-    consultation_fee = db.Column(db.Float, default=0)
-    medicine_fee = db.Column(db.Float, default=0)
+    appointment_date = db.Column(db.String(20))
 
-    spect_name = db.Column(db.String(100), default="")
-    spect_cost = db.Column(db.Float, default=0)
+    appointment_time = db.Column(db.String(20))
 
-    total_amount = db.Column(db.Float, default=0)
-    paid_amount = db.Column(db.Float, default=0)
-    due_amount = db.Column(db.Float, default=0)
-
-    payment_status = db.Column(db.String(20), default="Due")
+    status = db.Column(db.String(20))
+# -------------------------
 # Home Page
 # -------------------------
 @app.route('/')
@@ -133,11 +120,9 @@ def home():
 # -------------------------
 # Patient Registration
 # -------------------------
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-
-    msg = request.args.get('msg')
-    msg_type = request.args.get('type')
 
     if request.method == 'POST':
 
@@ -148,7 +133,11 @@ def register():
         ).first()
 
         if existing_patient:
-            return redirect('/register?msg=Patient already registered&type=danger')
+
+            return render_template(
+                'register.html',
+                error="Patient already registered with this phone number"
+            )
 
         patient = Patient(
             name=request.form['name'],
@@ -160,19 +149,16 @@ def register():
         db.session.add(patient)
         db.session.commit()
 
-        return redirect('/register?msg=Patient registered successfully&type=success')
+        return redirect('/patients')
 
-    return render_template(
-        'register.html',
-        msg=msg,
-        msg_type=msg_type
-    )
+    return render_template('register.html')
 
 # -------------------------
 # Patient Login
 # -------------------------
 # -------------------------
 # Patient Login
+# -------------------------
 @app.route('/patient-login', methods=['GET', 'POST'])
 def patient_login():
 
@@ -180,23 +166,18 @@ def patient_login():
 
         phone = request.form['phone']
 
-        patient = Patient.query.filter_by(phone=phone).first()
+        patient = Patient.query.filter_by(
+            phone=phone
+        ).first()
 
         if patient:
             return redirect(f'/patient-dashboard/{patient.id}')
-        else:
-            return render_template(
-                'patient_login.html',
-                error="Patient not found"
-            )
+        return "Patient not found"
 
     return render_template('patient_login.html')
-
-
 # -------------------------
 # Staff Login
 # -------------------------
-from flask import flash, render_template, request, redirect
 
 @app.route('/staff-login', methods=['GET', 'POST'])
 def staff_login():
@@ -214,20 +195,15 @@ def staff_login():
         if staff:
             return redirect('/staff-dashboard')
 
-        flash("Invalid Phone Number or Password", "error")
-        return redirect('/staff-login')
+        return "Invalid Phone Number or Password"
 
     return render_template('staff_login.html')
+# -------------------------
 # Staff Dashboard
+# -------------------------
 @app.route('/staff-dashboard')
 def staff_dashboard():
-
-    msg = request.args.get('msg')
-
-    return render_template(
-        'staff_dashboard.html',
-        msg=msg
-    )
+    return render_template('staff_dashboard.html')
 
 # -------------------------
 # View All Patients
@@ -357,47 +333,19 @@ def reports(patient_id):
 @app.route('/generate-token/<int:patient_id>')
 def generate_token(patient_id):
 
-    today = str(date.today())
-
-    settings = Settings.query.first()
-
-    if not settings:
-        settings = Settings(max_tokens_per_day=5)
-        db.session.add(settings)
-        db.session.commit()
-
-    today_tokens_count = Token.query.filter_by(
-        visit_date=today
-    ).count()
-
-    if today_tokens_count >= settings.max_tokens_per_day:
-        return redirect(
-            f'/patient-dashboard/{patient_id}?msg=Today token limit reached'
-        )
-
-    existing_token = Token.query.filter_by(
-        patient_id=patient_id,
-        visit_date=today
+    last_token = Token.query.order_by(
+        Token.token_number.desc()
     ).first()
 
-    if existing_token:
-        return redirect(
-            f'/patient-dashboard/{patient_id}?msg=You already have a token today. Token No: {existing_token.token_number}'
-        )
-
-    last_token_today = Token.query.filter_by(
-        visit_date=today
-    ).order_by(Token.token_number.desc()).first()
-
-    if last_token_today:
-        next_token = last_token_today.token_number + 1
+    if last_token:
+        next_token = last_token.token_number + 1
     else:
         next_token = 1
 
     token = Token(
         patient_id=patient_id,
         token_number=next_token,
-        visit_date=today,
+        visit_date=str(date.today()),
         status="Waiting",
         source="App"
     )
@@ -405,103 +353,44 @@ def generate_token(patient_id):
     db.session.add(token)
     db.session.commit()
 
-    return redirect(
-        f'/patient-dashboard/{patient_id}?msg=Token generated successfully. Your token number is {next_token}'
-    )
+    return f"Token Generated Successfully. Token No: {next_token}"
 @app.route('/patient-dashboard/<int:patient_id>')
 def patient_dashboard(patient_id):
 
     patient = Patient.query.get(patient_id)
 
-    today = str(date.today())
-
-    token = Token.query.filter_by(
-        patient_id=patient_id,
-        visit_date=today
-    ).order_by(Token.token_number.desc()).first()
-
-    current_token = Token.query.filter_by(
-        visit_date=today,
-        status='In Progress'
-    ).first()
-
-    completed_count = Token.query.filter_by(
-        visit_date=today,
-        status='Completed'
-    ).count()
-
-    token_closed = False
-    settings = Settings.query.first()
-
-    if settings:
-        today_tokens_count = Token.query.filter_by(
-            visit_date=today
-        ).count()
-
-        if today_tokens_count >= settings.max_tokens_per_day:
-            token_closed = True
-
-    visits = Visit.query.filter_by(
-        patient_id=patient_id
-    ).order_by(Visit.id.desc()).all()
-
-    reports = Report.query.filter_by(
-        patient_id=patient_id
-    ).order_by(Report.id.desc()).all()
-
-    bills = Billing.query.filter_by(
-        patient_id=patient_id
-    ).order_by(Billing.id.desc()).all()
-
-    msg = request.args.get('msg')
-
     return render_template(
         'patient_dashboard.html',
-        patient=patient,
-        token=token,
-        current_token=current_token,
-        completed_count=completed_count,
-        token_closed=token_closed,
-        visits=visits,
-        reports=reports,
-        bills=bills,
-        msg=msg
+        patient=patient
     )
 @app.route('/token-dashboard')
 def token_dashboard():
 
-    today = str(date.today())
-
-    tokens = Token.query.filter_by(
-        visit_date=today
-    ).order_by(
+    tokens = Token.query.order_by(
         Token.token_number
     ).all()
 
     patients = {}
 
     for token in tokens:
-        patient = Patient.query.get(token.patient_id)
+        patient = Patient.query.get(
+            token.patient_id
+        )
         patients[token.patient_id] = patient
 
     total_tokens = len(tokens)
 
     waiting = Token.query.filter_by(
-        visit_date=today,
         status='Waiting'
     ).count()
 
     in_progress = Token.query.filter_by(
-        visit_date=today,
         status='In Progress'
     ).count()
 
     completed = Token.query.filter_by(
-        visit_date=today,
         status='Completed'
     ).count()
-
-    settings = Settings.query.first()
 
     return render_template(
         'token_dashboard.html',
@@ -510,9 +399,7 @@ def token_dashboard():
         total_tokens=total_tokens,
         waiting=waiting,
         in_progress=in_progress,
-        completed=completed,
-        settings=settings,
-        today=today
+        completed=completed
     )
 @app.route('/update-token/<int:token_id>/<status>')
 def update_token(token_id, status):
@@ -545,36 +432,20 @@ def my_token(patient_id):
 @app.route('/staff-register', methods=['GET', 'POST'])
 def staff_register():
 
-    msg = request.args.get('msg')
-    msg_type = request.args.get('type')
-
     if request.method == 'POST':
-
-        phone = request.form['phone']
-
-        existing_staff = Staff.query.filter_by(
-            phone=phone
-        ).first()
-
-        if existing_staff:
-            return redirect('/staff-register?msg=Staff already registered&type=danger')
 
         staff = Staff(
             name=request.form['name'],
-            phone=phone,
+            phone=request.form['phone'],
             password=request.form['password']
         )
 
         db.session.add(staff)
         db.session.commit()
 
-        return redirect('/staff-register?msg=Staff registered successfully&type=success')
+        return redirect('/staff-login')
 
-    return render_template(
-        'staff_register.html',
-        msg=msg,
-        msg_type=msg_type
-    )
+    return render_template('staff_register.html') 
 
 @app.route('/export-tokens')
 def export_tokens():
@@ -714,7 +585,6 @@ def add_doctor():
 
     return render_template('add_doctor.html')
 
-
 @app.route('/doctors')
 def doctors():
 
@@ -723,7 +593,35 @@ def doctors():
     return render_template(
         'doctors.html',
         doctors=doctors
+    )   
+    
+@app.route('/book-appointment/<int:patient_id>', methods=['GET', 'POST'])
+def book_appointment(patient_id):
+
+    doctors = Doctor.query.all()
+
+    if request.method == 'POST':
+
+        appointment = Appointment(
+            patient_id=patient_id,
+            doctor_id=request.form['doctor_id'],
+            appointment_date=request.form['appointment_date'],
+            appointment_time=request.form['appointment_time'],
+            status='Booked'
+        )
+
+        db.session.add(appointment)
+        db.session.commit()
+
+        return "Appointment Booked Successfully"
+
+    return render_template(
+        'book_appointment.html',
+        doctors=doctors,
+        patient_id=patient_id
     )
+
+
 @app.route('/manual-token', methods=['GET', 'POST'])
 def manual_token():
 
@@ -745,35 +643,19 @@ def manual_token():
             db.session.add(patient)
             db.session.commit()
 
-        today = str(date.today())
+        last_token = Token.query.order_by(
+            Token.token_number.desc()
+        ).first()
 
-        settings = Settings.query.first()
-
-        if not settings:
-            settings = Settings(max_tokens_per_day=5)
-            db.session.add(settings)
-            db.session.commit()
-
-        today_tokens_count = Token.query.filter_by(
-            visit_date=today
-        ).count()
-
-        if today_tokens_count >= settings.max_tokens_per_day:
-            return redirect('/staff-dashboard?msg=Today token limit reached')
-
-        last_token_today = Token.query.filter_by(
-            visit_date=today
-        ).order_by(Token.token_number.desc()).first()
-
-        if last_token_today:
-            next_token = last_token_today.token_number + 1
+        if last_token:
+            next_token = last_token.token_number + 1
         else:
             next_token = 1
 
         token = Token(
             patient_id=patient.id,
             token_number=next_token,
-            visit_date=today,
+            visit_date=str(date.today()),
             status="Waiting",
             source=source
         )
@@ -781,141 +663,11 @@ def manual_token():
         db.session.add(token)
         db.session.commit()
 
-        return redirect(f'/staff-dashboard?msg=Token created successfully. Token No: {next_token}')
+        return f"Token Created Successfully. Token No: {next_token}"
 
     return render_template('manual_token.html')
-@app.route('/token-settings', methods=['GET', 'POST'])
-def token_settings():
-
-    settings = Settings.query.first()
-
-    if not settings:
-        settings = Settings(max_tokens_per_day=5)
-        db.session.add(settings)
-        db.session.commit()
-
-    if request.method == 'POST':
-        settings.max_tokens_per_day = int(request.form['max_tokens'])
-        db.session.commit()
-        return redirect('/token-dashboard')
-
-    return render_template(
-        'token_settings.html',
-        settings=settings
-    )
 
 
-@app.route('/add-spect', methods=['GET', 'POST'])
-def add_spect():
-
-    if request.method == 'POST':
-
-        spect = Spect(
-            name=request.form['name'],
-            price=float(request.form['price'])
-        )
-
-        db.session.add(spect)
-        db.session.commit()
-
-        return redirect('/spects')
-
-    return render_template('add_spect.html')
-
-
-@app.route('/spects')
-def spects():
-
-    spects = Spect.query.all()
-
-    return render_template(
-        'spects.html',
-        spects=spects)
-@app.route('/add-bill/<int:patient_id>', methods=['GET', 'POST'])
-def add_bill(patient_id):
-
-    if request.method == 'POST':
-
-        bill_date = request.form['bill_date']
-        consultation_fee = float(request.form.get('consultation_fee', 0))
-        medicine_fee = float(request.form.get('medicine_fee', 0))
-        spect_name = request.form.get('spect_name', '')
-        spect_cost = float(request.form.get('spect_cost', 0))
-        paid_amount = float(request.form.get('paid_amount', 0))
-
-        total = consultation_fee + medicine_fee + spect_cost
-        due = total - paid_amount
-
-        if due < 0:
-            due = 0
-
-        status = "Completed" if due == 0 else "Due"
-
-        bill = Billing(
-            patient_id=patient_id,
-            bill_date=bill_date,
-            consultation_fee=consultation_fee,
-            medicine_fee=medicine_fee,
-            spect_name=spect_name,
-            spect_cost=spect_cost,
-            total_amount=total,
-            paid_amount=paid_amount,
-            due_amount=due,
-            payment_status=status
-        )
-
-        db.session.add(bill)
-        db.session.commit()
-
-        return redirect(f'/billing-history/{patient_id}')
-
-    return render_template('add_bill.html', patient_id=patient_id)
-@app.route('/billing-history/<int:patient_id>')
-def billing_history(patient_id):
-
-    patient = Patient.query.get(patient_id)
-
-    bills = Billing.query.filter_by(
-        patient_id=patient_id
-    ).order_by(Billing.id.desc()).all()
-
-    return render_template(
-        'billing_history.html',
-        patient=patient,
-        bills=bills
-    )
-@app.route('/edit-bill/<int:bill_id>', methods=['GET', 'POST'])
-def edit_bill(bill_id):
-
-    bill = Billing.query.get_or_404(bill_id)
-
-    if request.method == 'POST':
-
-        bill.bill_date = request.form['bill_date']
-        bill.consultation_fee = float(request.form.get('consultation_fee', 0))
-        bill.medicine_fee = float(request.form.get('medicine_fee', 0))
-        bill.spect_name = request.form.get('spect_name', '')
-        bill.spect_cost = float(request.form.get('spect_cost', 0))
-        bill.paid_amount = float(request.form.get('paid_amount', 0))
-
-        bill.total_amount = (
-            bill.consultation_fee +
-            bill.medicine_fee +
-            bill.spect_cost
-        )
-
-        bill.due_amount = bill.total_amount - bill.paid_amount
-
-        if bill.due_amount < 0:
-            bill.due_amount = 0
-
-        bill.payment_status = "Completed" if bill.due_amount == 0 else "Due"
-
-        db.session.commit()
-
-        return redirect(f'/billing-history/{bill.patient_id}')
-
-    return render_template('edit_bill.html', bill=bill)
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

@@ -5,13 +5,50 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 18px;
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #0d6efd;
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-dark bg-primary">
+<nav class="navbar navbar-dark bg-primary shadow">
     <div class="container">
-        <span class="navbar-brand fs-3">
+        <span class="navbar-brand fs-4 fw-bold">
             👁️ EyeVault
         </span>
     </div>
@@ -19,123 +56,120 @@
 
 <div class="container mt-5">
 
-    <div class="text-center mb-5">
+    <!-- HERO SECTION -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h1 class="display-5 fw-bold text-primary">
+                Welcome to EyeVault
+            </h1>
 
-        <h1 class="display-3 fw-bold">
-            Welcome to EyeVault
-        </h1>
+            <p class="lead mt-3">
+                A digital eye hospital management system to handle
+                patient records, visits, reports, appointments,
+                tokens, doctors and billing in one place.
+            </p>
+        </div>
 
-        <p class="lead">
-            Digital Eye Hospital Record Management System
-        </p>
+        <div class="col-md-6">
+            <img src="{{ url_for('static', filename='images/Eye-Checkup-Services.webp') }}"
+                 class="hero-img"
+                 alt="Eye Checkup">
+        </div>
+    </div>
 
-        <p class="text-muted">
-            Manage Patients, Visits, Reports, Doctors and Token Booking Efficiently
-        </p>
+    <!-- MAIN PORTAL CARDS -->
+    <div class="text-center mb-4">
+        <h2 class="section-title">Choose Portal</h2>
+        <p class="text-muted">Select the required section to continue</p>
+    </div>
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-3">
+            <div class="card shadow feature-card h-100">
+                <div class="card-body text-center">
+                    <h4>📝 Patient Registration</h4>
+                    <p class="text-muted mt-3">
+                        Register a new patient into the system.
+                    </p>
+                    <a href="/register" class="btn btn-success mt-2 w-100">
+                        Register
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow feature-card h-100">
+                <div class="card-body text-center">
+                    <h4>🔐 Patient Login</h4>
+                    <p class="text-muted mt-3">
+                        Login to view token and appointments.
+                    </p>
+                    <a href="/patient-login" class="btn btn-primary mt-2 w-100">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow feature-card h-100">
+                <div class="card-body text-center">
+                    <h4>👨‍⚕️ Staff Register</h4>
+                    <p class="text-muted mt-3">
+                        Create a new staff account for hospital use.
+                    </p>
+                    <a href="/staff-register" class="btn btn-warning mt-2 w-100">
+                        Register
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow feature-card h-100">
+                <div class="card-body text-center">
+                    <h4>🏥 Staff Login</h4>
+                    <p class="text-muted mt-3">
+                        Manage patients, tokens, billing and reports.
+                    </p>
+                    <a href="/staff-login" class="btn btn-dark mt-2 w-100">
+                        Login
+                    </a>
+                </div>
+            </div>
+        </div>
 
     </div>
 
-    <div class="row justify-content-center">
-
-        <div class="col-md-3 mb-4">
-
-            <div class="card shadow-lg h-100">
-                <div class="card-body text-center">
-
-                    <h1>📝</h1>
-
-                    <h4>Patient Registration</h4>
-
-                    <p class="text-muted">
-                        Create a new patient account
-                    </p>
-
-                    <a href="/register"
-                       class="btn btn-success">
-                        Register
-                    </a>
-
-                </div>
-            </div>
-
+    <!-- FEATURES SECTION -->
+    <div class="row align-items-center mt-4 mb-5">
+        <div class="col-md-6">
+            <img src="{{ url_for('static', filename='images/eyee.webp') }}"
+                 class="feature-img"
+                 alt="Eye Surgery">
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-body">
+                    <h3 class="section-title mb-3">EyeVault Features</h3>
 
-            <div class="card shadow-lg h-100">
-                <div class="card-body text-center">
-
-                    <h1>👤</h1>
-
-                    <h4>Patient Login</h4>
-
-                    <p class="text-muted">
-                        Access records and book tokens
-                    </p>
-
-                    <a href="/patient-login"
-                       class="btn btn-primary">
-                        Login
-                    </a>
-
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">✔ Patient registration and login</li>
+                        <li class="list-group-item">✔ Staff dashboard and patient search</li>
+                        <li class="list-group-item">✔ Token generation with daily limit</li>
+                        <li class="list-group-item">✔ Appointment booking with doctors</li>
+                        <li class="list-group-item">✔ Billing with spectacles, paid and due amount</li>
+                        <li class="list-group-item">✔ Visit history, PDF download and report upload</li>
+                    </ul>
                 </div>
             </div>
-
         </div>
-
-        <div class="col-md-3 mb-4">
-
-            <div class="card shadow-lg h-100">
-                <div class="card-body text-center">
-
-                    <h1>🏥</h1>
-
-                    <h4>Staff Registration</h4>
-
-                    <p class="text-muted">
-                        Register hospital staff
-                    </p>
-
-                    <a href="/staff-register"
-                       class="btn btn-warning">
-                        Register
-                    </a>
-
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-md-3 mb-4">
-
-            <div class="card shadow-lg h-100">
-                <div class="card-body text-center">
-
-                    <h1>🔐</h1>
-
-                    <h4>Staff Login</h4>
-
-                    <p class="text-muted">
-                        Manage patients and hospital records
-                    </p>
-
-                    <a href="/staff-login"
-                       class="btn btn-dark">
-                        Login
-                    </a>
-
-                </div>
-            </div>
-
-        </div>
-
     </div>
 
 </div>
-
-<footer class="bg-primary text-white text-center p-3 mt-5">
-    © 2026 EyeVault | Eye Hospital Record Management System
-</footer>
 
 </body>
 </html>
