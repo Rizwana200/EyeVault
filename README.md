@@ -124,7 +124,7 @@ It helps clinic staff handle daily operations like patient registration, visit h
 
 ---
 
-### Patient Dashboard
+### Patient Information
 ![Patient Dashboard](screenshots_eyevault/patient-directory.png)
 
 ---
@@ -134,7 +134,7 @@ It helps clinic staff handle daily operations like patient registration, visit h
 
 ---
 
-### Patient Information Page
+### Registerd Patients
 ![Patient Information](screenshots_eyevault/patient-details.png)
 
 ---
@@ -144,29 +144,41 @@ It helps clinic staff handle daily operations like patient registration, visit h
 
 ---
 
-## Installation
+⚙️ Installation
+## 1. Clone the repository
 
-### 1. Clone the repository
 ```bash
 git clone https://github.com/Rizwana200/EyeVault.git
 cd EyeVault
 
-⚙️ Create Virtual Environment (COPY THIS EXACTLY)
-👉 Step 1: Go inside your project folder
-cd EyeVault
-👉 Step 2: Create virtual environment
+## 2. Create virtual environment
+
+```bash
 python -m venv venv
-👉 Step 3: Activate virtual environment
-🪟 Windows (CMD / PowerShell)
+
+## 3. Activate virtual environment
+
+### 🪟 Windows
+
+```bash
 venv\Scripts\activate
-🍎 Mac / Linux
+
+### 🍎 Mac / Linux
+
+```bash
 source venv/bin/activate
-✅ After activation you will see this:
-(venv) C:\EyeVault>
 
-That means virtual environment is ACTIVE ✔
+## 4. Install dependencies
 
-👉 Step 4: Install requirements
+```bash
 pip install -r requirements.txt
-👉 Step 5: Run project
+
+## 5. Run the project
+
+```bash
 python app.py
+
+## 🌐 Open in browser
+
+Open your browser and visit:
+http://127.0.0.1:5000/
