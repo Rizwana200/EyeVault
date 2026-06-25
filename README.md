@@ -158,7 +158,7 @@ It helps clinic staff handle daily operations like patient registration, visit h
 ![Bill History](screenshots_eyevault/bill_history.png)
 
 ---
-⚙️ Installation
+## ⚙️ Installation
 ## 1. Clone the repository
 
 ```bash
