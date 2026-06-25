@@ -144,6 +144,20 @@ It helps clinic staff handle daily operations like patient registration, visit h
 
 ---
 
+### Doctors List
+![Doctors List](screenshots_eyevault/doctors_list.png)
+
+---
+
+### Add Bill
+![Add Bill](screenshots_eyevault/addbill.png)
+
+---
+
+### Bill History
+![Bill History](screenshots_eyevault/bill_history.png)
+
+---
 ⚙️ Installation
 ## 1. Clone the repository
 
@@ -151,6 +165,7 @@ It helps clinic staff handle daily operations like patient registration, visit h
 git clone https://github.com/Rizwana200/EyeVault.git
 cd EyeVault
 
+```
 ## 2. Create virtual environment
 
 ```bash
