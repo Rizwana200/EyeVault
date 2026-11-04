@@ -1,114 +1,159 @@
-# EyeVault
+# 👁️ EyeVault
 
-EyeVault is a Flask-based Hospital / Eye Clinic Management System built to manage patients, staff, visits, reports, billing, tokens, doctors, and spectacles in one place.
+> **Your care, our vision.**
 
-It helps clinic staff handle daily operations like patient registration, visit history, report uploads, token generation, billing management, and patient dashboard access.
+A Flask-based management system for a small eye clinic. It replaces paper registers and spreadsheets for patient records, daily queue tokens, visit history, reports, and billing.
+
 
 ---
 
-## Built With
+## The problem
 
-- Python
-- Flask
-- Flask-SQLAlchemy
-- SQLite
-- Bootstrap 5
-- Jinja2
-- OpenPyXL
-- ReportLab
+Small clinics often track patients, queue numbers, and payments by hand. That leads to lost reports, patients waiting without knowing their position, and bills where nobody is sure what is still unpaid.
+
+EyeVault gives clinic staff one place to register patients, issue and track daily tokens, record visits, store reports, and manage bills. Patients get a dashboard showing their own token status, history, reports, and bills.
+
+**Why I built it:** I wanted to take a real-world workflow, the daily running of a small clinic, and build it end to end myself, from database design to a Dockerized deployment.
+
+**My contribution:** Solo project. I did the design, database schema, backend, templates, and Docker setup.
+
+---
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Language / framework | Python, Flask |
+| Database / ORM | SQLite, Flask-SQLAlchemy |
+| Frontend | Jinja2 templates, Bootstrap 5 |
+| Exports | OpenPyXL (Excel), ReportLab (PDF) |
+| Packaging | Docker |
 
 ---
 
 ## Features
 
-- Patient Registration and Patient Login
-- Staff Registration and Staff Login
-- Patient Dashboard with:
-  - Personal details
-  - Token status
-  - Visit history
-  - Uploaded reports
-  - Billing history
-- Staff Dashboard for clinic operations
-- Add and manage patient visits
+**Patient side**
+- Register and log in with a phone number
+- Dashboard: personal details, today's token and queue status, visit history, reports, billing history
+- Generate a token from the dashboard
+
+**Staff side**
+- Staff registration and login
+- Search a patient by phone and open their record
+- Add visit details (date, doctor, diagnosis, notes)
 - Upload and view patient reports
-- Generate patient tokens
-- Manual token generation by staff
-- Token dashboard with live token status
-- Token limit settings
-- Add and manage doctors
-- Add and manage spectacles
-- Add billing for patients
-- Edit billing records
-- View complete billing history
-- Export token records to Excel
-- Download patient visit history as PDF
+- Manual token creation for walk-ins and phone bookings
+- Live token dashboard (Waiting / In Progress / Completed) and a configurable daily token limit
+- Manage doctors and spectacles catalogue
+- Create and edit bills, and view billing history
+- Export tokens to Excel and download a patient's visit history as PDF
 
 ---
 
-## Project Modules
+## Architecture
 
-### 1. Patient Module
-- Patient registration
-- Patient login using phone number
-- Patient dashboard
-- View token details
-- View reports
-- View visit history
-- View billing history
+EyeVault is a single Flask application. Routes in `app.py` query the database through SQLAlchemy models and render Jinja templates. There are no separate API services.
 
----
+```
+Browser (Bootstrap UI)
+        │  HTTP (form posts and page requests)
+        ▼
+Flask routes (app.py)
+        │  SQLAlchemy ORM
+        ▼
+SQLite (instance/database.db)        static/uploads/  ← patient report files
+```
 
-### 2. Staff Module
-- Staff registration
-- Staff login
-- Search patient by phone
-- Open patient information page
-- Add visit details
-- Upload reports
-- Generate token
-- Add billing
-- Edit billing
-- View billing history
-
----
-
-### 3. Token Management
-- Generate token from patient dashboard
-- Manual token generation from staff dashboard
-- Token dashboard to track:
-  - Waiting tokens
-  - In Progress tokens
-  - Completed tokens
-- Token limit settings per day
-- Export token details to Excel
+```
+EyeVault/
+├── app.py              # models, routes, business logic
+├── templates/          # Jinja2 pages (patient, staff, token, billing)
+├── static/             # CSS and uploaded reports
+├── Dockerfile
+├── requirements.txt
+└── screenshots_eyevault/
+```
 
 ---
 
-### 4. Billing Management
-- Add bill for a patient
-- Edit bill later if payment is pending
-- Track:
-  - Consultation fee
-  - Medicine fee
-  - Spectacles name
-  - Spectacles cost
-  - Total amount
-  - Paid amount
-  - Due amount
-  - Payment status (Due / Completed)
-- Billing history visible in both:
-  - Staff side
-  - Patient dashboard
+## Data model
+
+`Patient` is the central table. Visits, reports, tokens, and bills all link to it through `patient_id`.
+
+```
+Patient 1 ──< Visit
+Patient 1 ──< Report
+Patient 1 ──< Token
+Patient 1 ──< Billing
+```
+
+| Table | Key columns | Purpose |
+|---|---|---|
+| **Patient** | `id` (PK), `name`, `dob`, `gender`, `phone` (unique) | Registered patients |
+| **Staff** | `id` (PK), `name`, `phone` (unique), `password` | Clinic staff accounts |
+| **Visit** | `id` (PK), `patient_id` (FK), `visit_date`, `doctor_name`, `diagnosis`, `notes` | Visit history |
+| **Report** | `id` (PK), `patient_id` (FK), `file_name`, `upload_date` | Uploaded patient reports |
+| **Token** | `id` (PK), `patient_id` (FK), `token_number`, `visit_date`, `status`, `source` | Daily queue tokens |
+| **Billing** | `id` (PK), `patient_id` (FK), `bill_date`, `consultation_fee`, `medicine_fee`, `spect_name`, `spect_cost`, `total_amount`, `paid_amount`, `due_amount`, `payment_status` | Bills and payments |
+| **Doctor** | `id` (PK), `name`, `specialization`, `available_time` | Doctors list |
+| **Spect** | `id` (PK), `name`, `price` | Spectacles catalogue |
+| **Settings** | `id` (PK), `max_tokens_per_day` | Daily token limit |
 
 ---
 
-### 5. Reports and History
-- Upload patient reports
-- View all uploaded reports
-- Add patient visit details
-- View visit history
-- Download visit history as PDF
+## Key design decisions
+
+- **Phone number as the patient identifier.** It is unique in the database and is what front-desk staff already ask for.
+- **Tokens are per day.** Each token stores a `visit_date`, and numbering restarts every day. A patient gets one token per day, and a configurable cap in `Settings` limits the day's total.
+- **Billing is computed on the server.** Total is consultation + medicine + spectacles. Due is total minus paid, floored at zero. Status becomes `Completed` when due is zero, otherwise `Due`. Bills can be edited so partial payments can be settled later.
+- **SQLite for simplicity.** It needs no setup and fits a single-clinic deployment. Moving to PostgreSQL would need only a connection-string change plus proper migrations.
+- **Docker for repeatable setup.** The container gives the same environment on any machine.
+
+---
+
+## Testing
+
+**Current status:** tested manually through the UI.
+
+**Planned:** pytest coverage for token limits, billing calculation, and access control, run on every push with GitHub Actions.
+
+```bash
+pytest
+```
+
+---
+
+## Getting started
+
+### Run locally
+
+```bash
+git clone https://github.com/Rizwana200/EyeVault.git
+cd EyeVault
+
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# Mac / Linux
+source venv/bin/activate
+
+pip install -r requirements.txt
+python app.py
+```
+
+Open http://127.0.0.1:5000/
+
+The database is created automatically on first run. To create a staff account, use `/staff-register`.
+
+### Run with Docker
+
+```bash
+docker build -t eyevault .
+docker run -p 5000:5000 eyevault
+```
+
+Then open http://127.0.0.1:5000/
 
 ---
 
@@ -124,8 +169,8 @@ It helps clinic staff handle daily operations like patient registration, visit h
 
 ---
 
-### Patient Information
-![Patient Dashboard](screenshots_eyevault/patient-directory.png)
+### Patient Directory
+![Patient Directory](screenshots_eyevault/patient-directory.png)
 
 ---
 
@@ -134,8 +179,8 @@ It helps clinic staff handle daily operations like patient registration, visit h
 
 ---
 
-### Registerd Patients
-![Patient Information](screenshots_eyevault/patient-details.png)
+### Patient Details
+![Patient Details](screenshots_eyevault/patient-details.png)
 
 ---
 
@@ -158,48 +203,27 @@ It helps clinic staff handle daily operations like patient registration, visit h
 ![Bill History](screenshots_eyevault/bill_history.png)
 
 ---
-## ⚙️ Installation
-## 1. Clone the repository
 
-```bash
-git clone https://github.com/Rizwana200/EyeVault.git
-cd EyeVault
+## How I used AI while building this
 
-```
-## 2. Create virtual environment
+I used AI tools as a pair-programming and review aid, mainly for debugging, reviewing my code, and structuring documentation. I did not paste suggestions in blindly. I read each one, checked it against how my code actually works, and ran it before keeping it.
 
-```bash
-python -m venv venv
+---
 
-```
-## 3. Activate virtual environment
+## Author
 
-### 🪟 Windows
+**Rizwana** — [GitHub](https://github.com/Rizwana200)
 
-```bash
-venv\Scripts\activate
+---
 
-```
-### 🍎 Mac / Linux
+## Our vision
 
-```bash
-source venv/bin/activate
+> *Your care, our vision.*
 
-```
-## 4. Install dependencies
+> *Good software, like good eye care, works quietly so people can focus on what matters.*
 
-```bash
-pip install -r requirements.txt
+> *Every patient seen, every token tracked, every record safe.*
 
-```
-## 5. Run the project
+> *Clear records. Shorter queues. Better care.*
 
-```bash
-python app.py
-
-```
-
-## 🌐 Open in browser
-
-Open your browser and visit:
-http://127.0.0.1:5000/
+⭐ If you find EyeVault useful, consider starring the repo.
